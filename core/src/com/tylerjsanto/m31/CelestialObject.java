@@ -7,12 +7,12 @@ public class CelestialObject {
     private String name;
     private float mass;
     private float radius;
-    private float[] position;
+    private Vector2 position;
 
     private Vector2 initialVelocity;
     private Vector2 currentVelocity;
 
-    public CelestialObject(String name, float mass, float radius, float[] position, Vector2 initialVelocity, Vector2 currentVelocity) {
+    public CelestialObject(String name, float mass, float radius, Vector2 position, Vector2 initialVelocity, Vector2 currentVelocity) {
         this.name = name;
         this.mass = mass;
         this.radius = radius;
@@ -33,7 +33,7 @@ public class CelestialObject {
         return radius;
     }
 
-    public float[] getPosition() {
+    public Vector2 getPosition() {
         return position;
     }
 

@@ -4,35 +4,34 @@ import com.badlogic.gdx.math.Vector2;
 
 public class SimEngine {
 
-    public static final float G = 6.67e-11f;
+    public static final float G = 6.67430e-11f;
 
-    public void updateSolarSystem(SolarSystem solSys, float deltaTime) {
-        for (CelestialObject obj : solSys.getCelestialObjects()) {
-            updateVelocity(obj, solSys, deltaTime);
-            updatePosition(obj, deltaTime);
-        }
-    }
-
+    // LibGDX implementation of calculateGravitationalForce
     public Vector2 calculateGravitationalForce(CelestialObject objOne, CelestialObject objTwo) {
-        float sqrDist = objTwo.getPosition().dst2(objOne.getPosition());
-        float force = G*(objOne.getMass() * objTwo.getMass()/sqrDist);
+            float distance = objTwo.getPosition().cpy().sub(objOne.getPosition()).len();
 
-        Vector2 forceDir = (objTwo.getPosition().sub(objOne.getPosition())).nor();
-        return new Vector2(force * forceDir.x, force * forceDir.y);
+            float force = G * (objOne.getMass() * objTwo.getMass() / distance * distance);
+
+            Vector2 forceDir = (objTwo.getPosition().cpy().sub(objOne.getPosition())).nor();
+            return new Vector2(force * forceDir.x, force * forceDir.y);
     }
 
-    public void updateVelocity(CelestialObject obj, SolarSystem solSys, float deltaTime) {
-        for (CelestialObject altObj : solSys.getCelestialObjects()) {
-            if (!altObj.equals(obj)) {
-                Vector2 force = calculateGravitationalForce(obj, altObj);
-                Vector2 acceleration = force.scl(1/obj.getMass());
-                obj.setCurrentVelocity(obj.getCurrentVelocity().add(acceleration.scl(deltaTime)));
+    public void updateObject(CelestialObject obj, SolarSystem solSys, float deltaTime) {
+        Vector2 totalForce = new Vector2(0, 0);
+        if (!obj.getAnchored()) {
+            for (CelestialObject otherObj : solSys.getCelestialObjects()) {
+                if (!obj.equals(otherObj)) {
+                    Vector2 force = calculateGravitationalForce(obj, otherObj);
+                    totalForce.add(force);
+                }
             }
-        }
-    }
+            Vector2 acceleration = totalForce.scl(1 / obj.getMass() * deltaTime);
 
-    public void updatePosition(CelestialObject obj, float deltaTime) {
-        obj.getPosition().add(obj.getCurrentVelocity().scl(deltaTime));
+            obj.setVelocity(obj.getVelocity().add(acceleration).cpy());
+
+            obj.setPosition(obj.getPosition().add(obj.getVelocity().cpy().scl(deltaTime)).cpy());
+
+        }
     }
 
 }

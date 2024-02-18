@@ -7,7 +7,7 @@ public class SolarSystem {
     private ArrayList<CelestialObject> celestialObjects;
 
     public SolarSystem() {
-        this.celestialObjects = new ArrayList<>();
+        celestialObjects = new ArrayList<CelestialObject>();
     }
 
     public void addObject(CelestialObject obj) {
